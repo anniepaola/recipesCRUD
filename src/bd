@@ -1,0 +1,53 @@
+DROP TABLE IF EXISTS "recipessteps";
+DROP TABLE IF EXISTS "recipesingredients";
+DROP TABLE IF EXISTS "recipes";
+DROP TABLE IF EXISTS "ingredients";
+DROP TABLE IF EXISTS "steps";
+
+CREATE TABLE "recipes" (
+    "recipe_id" SERIAL NOT NULL,
+    "recipe_title" STRING(100) UNIQUE NOT NULL,
+    PRIMARY KEY ("recipe_id")
+);
+CREATE TABLE "ingredients" (
+    "ingredient_id" SERIAL NOT NULL,
+    "ingredient_name" STRING(100) UNIQUE NOT NULL,
+    PRIMARY KEY ("ingredient_id")
+);
+CREATE TABLE "steps" (
+    "step_id" SERIAL NOT NULL,
+    "step_description" STRING(200) UNIQUE NOT NULL,
+    PRIMARY KEY ("step_id")
+);
+CREATE TABLE "recipessteps" (
+    "recipe_id" SERIAL NOT NULL,
+    "step_id" SERIAL NOT NULL,
+    PRIMARY KEY ("recipe_id","step_id"),
+    CONSTRAINT fk_recipe FOREIGN KEY ("recipe_id") REFERENCES "recipes",
+    CONSTRAINT fk_steps FOREIGN KEY ("step_id") REFERENCES "steps"
+);
+CREATE TABLE "recipesingredients" (
+    "recipe_id" SERIAL NOT NULL,
+    "ingredient_id" SERIAL NOT NULL,
+    PRIMARY KEY ("recipe_id","ingredient_id"),
+    CONSTRAINT fk_recipe FOREIGN KEY ("recipe_id") REFERENCES "recipes",
+    CONSTRAINT fk_ingredient FOREIGN KEY ("ingredient_id") REFERENCES "ingredients"
+);
+
+INSERT INTO recipes (recipe_id, recipe_title) VALUES (1,'titulo ejemplo 1');
+INSERT INTO ingredients (ingredient_id, ingredient_name) VALUES (1,'ingrediente ejemplo 1');
+INSERT INTO steps (step_id, step_description) VALUES (1, 'paso ejemplo 1');
+INSERT INTO recipesingredients (recipe_id,ingredient_id) VALUES (1,1);
+INSERT INTO recipessteps (recipe_id,step_id) VALUES (1,1);
+
+INSERT INTO recipes (recipe_id, recipe_title) VALUES (2,'titulo ejemplo 2');
+INSERT INTO ingredients (ingredient_id, ingredient_name) VALUES (2,'ingrediente ejemplo 2');
+INSERT INTO steps (step_id, step_description) VALUES (2, 'paso ejemplo 2');
+INSERT INTO recipesingredients (recipe_id,ingredient_id) VALUES (2,2);
+INSERT INTO recipessteps (recipe_id,step_id) VALUES (2,2);
+
+INSERT INTO recipes (recipe_id, recipe_title) VALUES (3,'titulo ejemplo 3');
+INSERT INTO ingredients (ingredient_id, ingredient_name) VALUES (3,'ingrediente ejemplo 3');
+INSERT INTO steps (step_id, step_description) VALUES (3, 'paso ejemplo 3');
+INSERT INTO recipesingredients (recipe_id,ingredient_id) VALUES (3,3);
+INSERT INTO recipessteps (recipe_id,step_id) VALUES (3,3);
