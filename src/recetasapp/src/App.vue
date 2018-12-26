@@ -27,10 +27,14 @@
                           <p class="font-weight-bold" >Título:</p>
                           <b-form-row class="mb-4"><input type="text" placeholder="Escriba el titulo" v-model="recipe_title"></b-form-row>                                             
                           <p class="font-weight-bold" >Ingredientes:</p>
+                          <b-form-row align-h="end" v-for="ingredient in this.ingredients">
+                            <b-col ><ul><li>{{ingredient}}</li></ul></b-col></b-form-row>
                           <p>Escriba ingrediente por ingrediente</p>
                           <b-form-row class="mb-3"><input type="text" placeholder="Escriba ingrediente" v-model="ingredient">                                
                             <button @click="addIngredient" class="btn btn-primary" >Agregar ingrediente</button></b-form-row>                           
                           <p class="font-weight-bold" >Pasos:</p>
+                          <b-form-row   v-for="step in this.steps">
+                            <b-col sm="6"><ul><li>{{step}}</li></ul></b-col></b-form-row>
                           <p>Escriba paso por paso</p>
                           <b-form-row><input type="text" placeholder="Escriba un paso" v-model="step">                                
                             <button @click="addStep" class="btn btn-primary">Agregar Paso</button> </b-form-row> 
@@ -194,13 +198,14 @@ export default {
       
       evt.preventDefault()
                     
-
+      var vm = true;
       if (!this.recipe_title) {
         alert('Por favor agregar titulo')
       }else if(this.recetas != null){
         this.recetas.forEach(element => {
                if(element.recipe_title == this.recipe_title){                
                   alert('YA EXISTE UNA RECETA CON ESE TITULO')
+                  vm = false;
                }
              });
       }
@@ -209,7 +214,7 @@ export default {
         alert('Por favor agregar ingredientes')
       } else if(!this.steps.length){
         alert('Por favor agregar pasos')
-      }else{
+      }else if(vm){
         
         this.addRecipe(evt)
       }
@@ -273,7 +278,7 @@ export default {
          if(this.ingredients != null){
         this.ingredients.forEach(element => {
                if(element == this.ingredient){                
-                  alert('YA EXISTE ESE PASO EN ESA RECETA')
+                  alert('YA EXISTE ESE INGREDIENTE EN ESA RECETA')
                   vm = false;
                }
              });
