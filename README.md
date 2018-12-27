@@ -10,19 +10,19 @@ CRUD with golang and vuejs
 
 4. En la carpeta src instalar las librerias necesarias con los siguientes comandos:
 
-    go get github.com/gorilla/handlers
+        go get github.com/gorilla/handlers
 
-    go get github.com/gorilla/mux
+        go get github.com/gorilla/mux
 
-    go get github.com/lib/pq
+        go get github.com/lib/pq
 
 5. En la carpeta src correr el archivo main.go go run main.go (dejarlo corriendo)
 
 6. Dentro de src en la carpeta recetasapp correr la aplicacion de la siguiente manera:
 
-  - npm install
-  - npm install node-sass
-  - npm run dev
+        - npm install
+        - npm install node-sass
+        - npm run dev
 
 Esto abrira la pagina de la aplicación automaticamente.
 
