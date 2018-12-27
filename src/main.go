@@ -40,9 +40,7 @@ func Show(w http.ResponseWriter,req *http.Request){
 	var pasos []string
 	var ingredientes []string
 	var recipeID int64
-	var title string
-
-	
+	var title string	
 
 	rows, err := db.Query("select recipe_id, recipe_title FROM recipes;")
 	if err != nil {
@@ -59,13 +57,8 @@ func Show(w http.ResponseWriter,req *http.Request){
 
 		ingredientes = SearchIngredients(title)
 		pasos = SearchSteps(title)
-
-		
-		fmt.Printf("Name : %s\n", title)
 		recetas = append(recetas, Recipe{Recipe_title: title, Ingredients:ingredientes, Steps:pasos})
-	}
-
-	
+	}	
 
 	json.NewEncoder(w).Encode(recetas)
 }
@@ -87,15 +80,13 @@ func SearchIngredients(titulo string) ([]string){
 			}
 			ingredientes = append(ingredientes, ingrediente)
 		}
-
 	return ingredientes
 }
 
 func SearchSteps(titulo string) ( []string){
 
 	 db := Conection();
-	 var pasos []string
-	
+	 var pasos []string	
 
 		rowsp, errp := db.Query("select step_description from steps INNER JOIN (select step_id from recipessteps INNER JOIN  (SELECT recipe_id FROM recipes WHERE recipe_title = '"+titulo+"') as recipe ON recipessteps.recipe_id = recipe.recipe_id) as pasos ON steps.step_id = pasos.step_id;")
 		if errp != nil {
@@ -109,10 +100,9 @@ func SearchSteps(titulo string) ( []string){
 			}
 			pasos = append(pasos, paso)
 		}		
-		
 		return pasos
-
 }
+
 func New(w http.ResponseWriter,req *http.Request){
 
 	db := Conection()
@@ -122,74 +112,61 @@ func New(w http.ResponseWriter,req *http.Request){
     erro := decoder.Decode(&recipe)
     if erro != nil {
         panic(erro)
-    }
-   
-	title := recipe.Recipe_title
-	
+	}
+	   
+	title := recipe.Recipe_title	
 	
 	filas,_:= db.Query("SELECT recipe_id FROM recipes WHERE recipe_title = '"+title+"';")
 	if !filas.Next() {
-		fmt.Printf("NO HAY NINGUNA RECETA IGUAL\n")
+		
 		if _, err := db.Exec("INSERT INTO recipes (recipe_title) VALUES ( '"+title+"');"); err != nil {
 			log.Fatal(err)
 		}
 	}else{
-
 		log.Fatal("RECETA CON ESE TITULO YA EXISTE")
-
 	}
 	
-
-	
-
-	//var ids []int64
-
 	for i := 0; i < len(recipe.Ingredients); i++ {
-	fmt.Printf("ENTRE \n")
+	
 	name := recipe.Ingredients[i]
-	fmt.Printf(recipe.Ingredients[i]+"\n")
-
+	
 	res,_:= db.Query("SELECT ingredient_id FROM ingredients WHERE ingredient_name = '"+name+"';")
 	if !res.Next() {
-		fmt.Printf("NO HAY NINGUN INGREDIENTE IGUAL\n")
+		
 		if _, err := db.Exec("INSERT INTO ingredients (ingredient_name) VALUES ( '"+name+"');"); err != nil {
 			log.Fatal(err)
 		}
-	}else {fmt.Printf("ENCONTRE UNA IGUAL\n")}
-
+	}
 	rows, err := db.Query("SELECT (SELECT recipe_id FROM recipes WHERE recipe_title = '"+title+"') AS recipe, (SELECT ingredient_id FROM ingredients WHERE ingredient_name = '"+name+"') AS ingredient ;")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for rows.Next() {
-		
+	for rows.Next() {		
 		var recipeID string
 		var ingredientID string
 		if err := rows.Scan(&recipeID, &ingredientID); err != nil {
 			log.Fatal(err)
 		}
-		//fmt.Printf(recipeID)
+		
 		if _, err := db.Exec("INSERT INTO recipesingredients (recipe_id,ingredient_id) VALUES ( '"+recipeID+"','"+ingredientID+"');"); err != nil {
 			log.Fatal(err)
 		}
-
 	}
 
 	}
 
 	for i := 0; i < len(recipe.Steps); i++ {
-		fmt.Printf("ENTRE R \n")
-		desc := recipe.Steps[i]
-		fmt.Printf(recipe.Steps[i]+"\n")
+		
+		desc := recipe.Steps[i]	
 	
 		res,_:= db.Query("SELECT step_id FROM steps WHERE step_description = '"+desc+"';")
 		if !res.Next() {
-			fmt.Printf("NO HAY NINGUN PASO IGUAL\n")
+			
 			if _, err := db.Exec("INSERT INTO steps (step_description) VALUES ( '"+desc+"');"); err != nil {
 				log.Fatal(err)
 			}
-		}else {fmt.Printf("ENCONTRE UN PASO IGUAL\n")}
+		}
 	
 		rows, err := db.Query("SELECT (SELECT recipe_id FROM recipes WHERE recipe_title = '"+title+"') AS recipe, (SELECT step_id FROM steps WHERE step_description = '"+desc+"') AS step ;")
 		if err != nil {
@@ -211,9 +188,6 @@ func New(w http.ResponseWriter,req *http.Request){
 		}
 	
 		}
-	
-
-	
 
 	rows, err := db.Query("select recipe_title FROM recipes;")
 	if err != nil {
@@ -229,17 +203,13 @@ func New(w http.ResponseWriter,req *http.Request){
 		}
 		recipes = append(recipes, Recipe{Recipe_title: title})
 	}
-
-
-
 }
 
 func EditRecipe(w http.ResponseWriter,req *http.Request){
 
 	db := Conection()	
 	params:=mux.Vars(req)
-	tituloOriginal,_:=params["title"]
-	fmt.Printf("titulo original original:"+tituloOriginal)	
+	tituloOriginal,_:=params["title"]		
 	var tituloEditado string
 	var ingredientesEdit []string
 	var pasosEdit []string
@@ -255,13 +225,8 @@ func EditRecipe(w http.ResponseWriter,req *http.Request){
 	ingredientesEdit = recipe.Ingredients
 	pasosEdit = recipe.Steps
 
-	fmt.Printf(tituloEditado)
-	fmt.Printf(ingredientesEdit[0])
-	fmt.Printf(pasosEdit[0])
-
 	if _, erro := db.Exec("update recipes set recipe_title ='"+tituloEditado+"' where recipe_title = '"+tituloOriginal+"';"); erro != nil {
 		log.Fatal(erro)
-		fmt.Printf("ERRA")
 	}
 	
 	
@@ -274,18 +239,16 @@ func EditRecipe(w http.ResponseWriter,req *http.Request){
 	}
 
 	for i := 0; i < len(ingredientesEdit); i++ {
-
-		fmt.Printf("ENTRE \n")
+		
 		name := ingredientesEdit[i]
-		fmt.Printf(ingredientesEdit[i]+"\n")
 	
 		res,_:= db.Query("SELECT ingredient_id FROM ingredients WHERE ingredient_name = '"+name+"';")
 		if !res.Next() {
-			fmt.Printf("NO HAY NINGUN INGREDIENTE IGUAL\n")
+			
 			if _, err := db.Exec("INSERT INTO ingredients (ingredient_name) VALUES ( '"+name+"');"); err != nil {
 				log.Fatal(err)
 			}
-		}else {fmt.Printf("ENCONTRE UNA IGUAL\n")}
+		}
 	
 		rows, err := db.Query("SELECT (SELECT recipe_id FROM recipes WHERE recipe_title = '"+tituloEditado+"') AS recipe, (SELECT ingredient_id FROM ingredients WHERE ingredient_name = '"+name+"') AS ingredient ;")
 		if err != nil {
@@ -300,7 +263,7 @@ func EditRecipe(w http.ResponseWriter,req *http.Request){
 			if err := rows.Scan(&recipeID, &ingredientID); err != nil {
 				log.Fatal(err)
 			}
-			//fmt.Printf(recipeID)
+		
 			if _, err := db.Exec("INSERT INTO recipesingredients (recipe_id,ingredient_id) VALUES ( '"+recipeID+"','"+ingredientID+"');"); err != nil {
 				log.Fatal(err)
 			}
@@ -309,20 +272,17 @@ func EditRecipe(w http.ResponseWriter,req *http.Request){
 	
 		}
 
-
-
 		for i := 0; i < len(pasosEdit); i++ {
-			fmt.Printf("ENTRE R \n")
-			desc := pasosEdit[i]
-			fmt.Printf(pasosEdit[i]+"\n")
+			
+			desc := pasosEdit[i]			
 		
 			res,_:= db.Query("SELECT step_id FROM steps WHERE step_description = '"+desc+"';")
 			if !res.Next() {
-				fmt.Printf("NO HAY NINGUN PASO IGUAL\n")
+			
 				if _, err := db.Exec("INSERT INTO steps (step_description) VALUES ( '"+desc+"');"); err != nil {
 					log.Fatal(err)
 				}
-			}else {fmt.Printf("ENCONTRE UN PASO IGUAL\n")}
+			}
 		
 			rows, err := db.Query("SELECT (SELECT recipe_id FROM recipes WHERE recipe_title = '"+tituloEditado+"') AS recipe, (SELECT step_id FROM steps WHERE step_description = '"+desc+"') AS step ;")
 			if err != nil {
@@ -336,26 +296,22 @@ func EditRecipe(w http.ResponseWriter,req *http.Request){
 				if err := rows.Scan(&recipeID, &stepID); err != nil {
 					log.Fatal(err)
 				}
-				//fmt.Printf(recipeID)
+				
 				if _, err := db.Exec("INSERT INTO recipessteps (recipe_id,step_id) VALUES ( '"+recipeID+"','"+stepID+"');"); err != nil {
 					log.Fatal(err)
-				}
-		
+				}		
 			}
 		
-			}
-	
+			}	
 
 }
-
 
 
 func ShowRecipe(w http.ResponseWriter,req *http.Request){
 
 	db := Conection()
 	params:=mux.Vars(req)
-	titulo,_:=params["title"]
-	fmt.Printf(titulo)
+	titulo,_:=params["title"]	
 	var recipeID int64
 	var ingredientesShow []string
 	var pasosShow []string
@@ -366,20 +322,12 @@ func ShowRecipe(w http.ResponseWriter,req *http.Request){
 			if err := filas.Scan(&recipeID); err != nil {
 				log.Fatal(err)
 			}
-	}
-	
+	}	
 
 	ingredientesShow = SearchIngredients(titulo)
 	pasosShow = SearchSteps(titulo)
 
-		fmt.Printf(ingredientesShow[0])
-
-		
-		fmt.Printf(pasosShow[0])
-
 		json.NewEncoder(w).Encode(Recipe{Recipe_title: titulo, Ingredients:ingredientesShow, Steps:pasosShow})
-		
-
 
 }
 
@@ -399,13 +347,11 @@ func Delete(w http.ResponseWriter,req *http.Request){
 
 	if _, err := db.Exec("delete from recipes where recipe_title = '"+titulo+"';"); err != nil {
 		log.Fatal(err)
-	}
-	
+	}	
 
 }
 
-func main() {
-	
+func main() {	
 
 	router := mux.NewRouter()
 	router.HandleFunc("/show", Show).Methods("GET")

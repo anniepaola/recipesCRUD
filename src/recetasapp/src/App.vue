@@ -170,23 +170,19 @@ export default {
   },
 
   created: function(){
-        this.getRecipes();
-        
+        this.getRecipes();        
      },
 
   methods: {
     search () {
       this.tracks = tracks
     },
-    getRecipes: function() {
-           
+    getRecipes: function() {           
       
       this.$axios.get('http://localhost:8000/show')
-      .then(response => {
-       
+      .then(response => {       
         this.recetas = [],
-        this.recetas = response.data;
-        
+        this.recetas = response.data;        
         
              });
         },
@@ -228,21 +224,15 @@ export default {
         alert('Por favor agregar ingredientes')
       } else if(!this.editRecipeData.steps.length){
         alert('Por favor agregar pasos')
-      }else{
-        
-        
-
+      }else{      
+       
          this.editRecipe(evt);
       }
-
-
-     // this.editRecipe(evt);
-      
     },
     
     addRecipe: function(e){
-            e.preventDefault();
-           
+
+            e.preventDefault();          
           
             this.$axios.post('http://localhost:8000/new', {  
 
@@ -250,7 +240,6 @@ export default {
                 ingredients: this.ingredients,
                 steps: this.steps                                
               })
-
               .then(function (response) {
                 console.log(response);
               })
@@ -258,35 +247,33 @@ export default {
                 
                 console.log(error);
               });
-
             
-            this.recetas.push({recipe_title:this.recipe_title,ingredients:this.ingredients,steps:this.steps});     
-                       
+            this.recetas.push({recipe_title:this.recipe_title,ingredients:this.ingredients,steps:this.steps});  
+                      
             this.recipe_title = '',
             this.ingredient = '',
             this.step = '',
             this.ingredients = [],
             this.steps = []       
             alert('RECETA AGREGADA CON ÉXITO');
-            this.recipe_title = '',
-            
+            this.recipe_title = '',            
             this.$refs.modal.hide();
-        },        
+        },    
+
         addIngredient: function (e) {
             e.preventDefault();
             var vm = true;
+
          if(this.ingredients != null){
-        this.ingredients.forEach(element => {
+            this.ingredients.forEach(element => {
                if(element == this.ingredient){                
                   alert('YA EXISTE ESE INGREDIENTE EN ESA RECETA')
                   vm = false;
                }
              });
-      }
-          if(vm){
-            
-            this.ingredients.push(this.ingredient);}
-            
+            }
+          if(vm){            
+            this.ingredients.push(this.ingredient);}            
             this.ingredient = '';
 
         },
@@ -296,69 +283,55 @@ export default {
             
             var vm = true;
          if(this.steps != null){
-        this.steps.forEach(element => {
+            this.steps.forEach(element => {
                if(element == this.step){                
                   alert('YA EXISTE ESE PASO EN ESA RECETA')
                   vm = false;
                }
              });
-      }
+            }
+
           if(vm){
-
-
             this.steps.push(this.step);}
             this.step = '';
-
           },
 
         showRecipe: function(receta){
           this.showInfo = true;
-
           this.$axios.get('http://localhost:8000/show/'+receta.recipe_title)
-      .then(response => {
-        
-        this.recipe_title = response.data.recipe_title;
-        this.ingredients = response.data.ingredients;
-          this.steps = response.data.steps;
-       
-        
-             });
-
-                    
+      .then(response => {        
+          this.recipe_title = response.data.recipe_title;
+          this.ingredients = response.data.ingredients;
+          this.steps = response.data.steps;       
+         });                    
         },
+
         clean: function(){
-          console.log("INGREDIENTES:"+this.ingredients)
-          this.recipe_title = '',
+            this.recipe_title = '',
             this.ingredient = '',
             this.step = '',
             this.ingredients = [],
             this.steps = []
-
         },
 
         cargar: function(receta){
 
-          this.$axios.get('http://localhost:8000/show/'+receta.recipe_title)
-      .then(response => {
+            this.$axios.get('http://localhost:8000/show/'+receta.recipe_title)
+           .then(response => {
         
-        this.editRecipeData.recipe_title  = response.data.recipe_title;
-        this.editRecipeData.ingredients = response.data.ingredients;
-        this.editRecipeData.steps = response.data.steps;
-        this.editRecipeData.ingredient = '';
-        this.editRecipeData.step = '';
-        
-        
+            this.editRecipeData.recipe_title  = response.data.recipe_title;
+            this.editRecipeData.ingredients = response.data.ingredients;
+            this.editRecipeData.steps = response.data.steps;
+            this.editRecipeData.ingredient = '';
+            this.editRecipeData.step = '';      
              });
-
-        this.recipe = receta;
-        
+            this.recipe = receta;        
         },
+
         cerrarDetalle: function(){
-
-            this.showInfo = false;
-            
-            
+            this.showInfo = false;           
         },
+        
         editRecipe: function(e){
           
             e.preventDefault();
@@ -366,10 +339,10 @@ export default {
             this.showInfo = false;
 
              if(!this.editRecipeData.ingredients.length){
-        alert('Por favor agregar ingredientes')
-      } else if(!this.editRecipeData.steps.length){
-        alert('Por favor agregar pasos')
-      }else{
+                alert('Por favor agregar ingredientes')
+              } else if(!this.editRecipeData.steps.length){
+                alert('Por favor agregar pasos')
+              }else{
            
           
             this.$axios.post('http://localhost:8000/edit/'+this.recipe.recipe_title, {  
@@ -386,74 +359,59 @@ export default {
                 
                 console.log(error);
               });
-
             
-            var index = this.recetas.indexOf(this.recipe);
-            
+            var index = this.recetas.indexOf(this.recipe);           
 
             this.recetas[index].recipe_title = this.editRecipeData.recipe_title;
             this.recetas[index].ingredients = this.editRecipeData.ingredients;
-            this.recetas[index].steps = this.editRecipeData.steps;
-
-           
+            this.recetas[index].steps = this.editRecipeData.steps;           
             this.$refs.modal.hide();
-
-      }
-
+            }
         },
 
-        deleteIngredient: function(i){
-
-                   
-          this.editRecipeData.ingredients.pop(i);
+        deleteIngredient: function(i){                   
+          this.editRecipeData.ingredients.pop(i);       
           
-          
-
         },
 
         addIngredientEdit: function(e){
 
             e.preventDefault();
-          var vm = true;
-         if(this.editRecipeData.ingredients != null){
-        this.editRecipeData.ingredients.forEach(element => {
-               if(element == this.editRecipeData.ingredient){                
+            var vm = true;
+
+           if(this.editRecipeData.ingredients != null){
+              this.editRecipeData.ingredients.forEach(element => {
+           if(element == this.editRecipeData.ingredient){                
                   alert('YA EXISTE ESE INGREDIENTE EN ESA RECETA')
                   vm = false;
-               }
-             });
-      }
+                     }
+                  });
+                }
+
           if(vm){
-         this.editRecipeData.ingredients.push(this.editRecipeData.ingredient);}
-         
+            this.editRecipeData.ingredients.push(this.editRecipeData.ingredient);}       
 
-
-         this.editRecipeData.ingredient = '';
-
+            this.editRecipeData.ingredient = '';
         },
 
-        deleteStep: function(i){
-
+        deleteStep: function(i){         
           
-          
-          this.editRecipeData.steps.pop(i);
-          
+          this.editRecipeData.steps.pop(i);         
 
         },
 
         addStepEdit: function(e){
           e.preventDefault();
            var vm = true;
-         if(this.editRecipeData.steps != null){
-        this.editRecipeData.steps.forEach(element => {
-               if(element == this.editRecipeData.step){                
+          if(this.editRecipeData.steps != null){
+              this.editRecipeData.steps.forEach(element => {
+          if(element == this.editRecipeData.step){                
                   alert('YA EXISTE ESE PASO EN ESA RECETA')
-                  vm = false;
-               }
+                  vm = false;}
              });
-      }
-          if(vm){
+            }
 
+          if(vm){
          this.editRecipeData.steps.push(this.editRecipeData.step);}
          this.editRecipeData.step = '';
         },
@@ -461,10 +419,7 @@ export default {
         deleteRecipe: function(receta){
 
           var index = this.recetas.indexOf(receta);
-          this.recetas.splice(index,1);
-
-          console.log(index)
-          console.log(this.recetas)
+          this.recetas.splice(index,1);         
 
           this.$axios.post('http://localhost:8000/delete/'+receta.recipe_title)
 
@@ -475,9 +430,6 @@ export default {
                 
                 console.log(error);
               });
-
-            //this.getRecipes();
-
         },
 
         searchRecipe: function(e){
@@ -494,38 +446,22 @@ export default {
              });
 
             if(receta){
-
               this.recetas = [];
-              this.recetas.push(receta);
-              
-
+              this.recetas.push(receta);           
             }
             
             if(!vm){
-
               alert('NO EXISTE NINGUNA RECETA CON ESE TÍTULO');
               this.getRecipes();
-
             }
-
         },
 
         closeSearch: function(){
-
             this.getRecipes();
             this.buscar = '';
-
         }
+    },
 
-  },
-
-  computed: {
-    filteredList() {
-      return this.recetas.filter(receta => {
-        return receta.recipe_title.toLowerCase().includes(this.buscar.toLowerCase())
-      })
-    }
-  }
   }
 
 </script>
