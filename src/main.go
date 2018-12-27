@@ -1,8 +1,7 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
+	"database/sql"	
 	"log"	
 	"encoding/json"	
 	//"strconv"	
